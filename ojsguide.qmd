@@ -1,0 +1,400 @@
+---
+title: Interactive output for geotechnical data with R/Python/Julia + OJS
+author: Erdi Myftaraga
+date: 2023-05-30
+format:
+  html:
+    #mainfont: 'Fira Mono'
+    monofont: 'Fira Mono'
+    linestretch: 1.5
+    table-of-contents: false
+    anchor-sections: true
+    page-layout: custom
+    margin-left: 125px
+    margin-right: 125px
+    highlight-style: github
+    code-block-bg: true
+    code-block-border-left: '#5e5e5e'
+    code-annotations: below
+    code-copy: false
+    code-fold: show
+    link-external-newwindow: true
+comments:
+  hypothesis: true
+---
+
+## Intro
+
+This is a short step-by-step guide on how to create interactive output for geotechnical data using `Observable JavaScript (OJS)` combined with your go-to programming language for working with data (`R`, `Python`, or `Julia`). The main idea is to create content similar to the following examples:
+
+-   [Soil unitisation viewer](https://erdirstats.github.io/ojs-01/ojs-01.html)
+-   [CPT data explorer](https://erdirstats.github.io/ojs-02/ojs-02.html)
+-   [Soil unit comparison](https://erdirstats.github.io/ojs-03/ojs-03.html)
+
+These types of documents can be used a lot in geotechnics, starting from exploring _in-situ_ and laboratory data up to presenting output like design lines. Interactivity overcomes most of the challenges associated with the _static_ way of presenting content.
+
+::: {.callout-note title="Disclaimer"}
+This is not a thorough guide, and some key concepts only are shown. Much more material is shown in the links in this document.
+:::
+
+::: {.callout-tip}
+## Commenting
+
+If you have any comments/remarks on the content of this post, you can select the specific text and add `Annotate` or `Highlight`. The comments will appear on the top right of the page.
+:::
+
+## Workflow
+
+Let's say we want to create some interactive output for some geotechnical data we have. To do this, we could think of the following workflow:
+
+```{mermaid}
+flowchart LR
+  A[Data source] --> B[Read/prepare data]
+  B --> C[Visualize]
+  C --> D[Enable interactivity]
+  D --> E[Put all in an HTML]
+  E --> F((Deploy/share))
+```
+
+Depending on the type/size of the data, project, and our idea on how the final output should look, each of these steps may involve small or enormous amount of work. Let's consider the `Read/prepare data` step. If the data we are reading are already formatted the way we want, no preparation is needed. Generally speaking, though, you would want/need to work a bit with the data.
+
+What tools can we use to complete each of these steps? The steps involving retrieving the data from a `Data source` and `Read/prepare data` would need writing some code. There are many options here. We could use `R` to complete these tasks or we could rather go for the difficult way, using `Python` or `Julia`.
+
+```{mermaid}
+flowchart LR
+  A[Data source] --> B[Read/prepare data]
+  B --> C[Visualize]
+  C --> D[Enable interactivity]
+  D --> E[Put all in an HTML]
+  E --> F((Deploy/share))
+  style A fill: #ffe3e3
+  style B fill: #ffe3e3
+```
+
+```{mermaid}
+flowchart LR
+  A[Data source] ---> G & H & I
+  G[R] --->  B[Read/prepare data]
+  H[Python] --->  B[Read/prepare data]
+  I[Julia] --->  B[Read/prepare data]
+  style A fill: #ffe3e3
+  style B fill: #ffe3e3
+  style G fill: #ffe3e3
+  style H fill: #ffe3e3
+  style I fill: #ffe3e3
+```
+
+There are many options to `Visualize` data and to `Enable interactivity`. Here we are going to use [`OJS`](https://observablehq.com/). `OJS` is a big platform but what we are mostly interested here is the [`Observable Plot`](https://observablehq.com/plot/) package.
+
+> `Observable Plot` is a free, open-source, JavaScript library for visualizing tabular data, focused on accelerating exploratory data analysis. It has a concise, memorable, yet expressive interface, featuring scales and layered marks in the _grammar of graphics_ ...
+
+```{mermaid}
+flowchart LR
+  A[Data source] --> B[Read/prepare data]
+  B --> C[Visualize]
+  C --> D[Enable interactivity]
+  D --> E[Put all in an HTML]
+  E --> F((Deploy/share))
+  style C fill: #ffe3e3
+  style D fill: #ffe3e3
+```
+
+```{mermaid}
+flowchart LR
+  J[OJS] --->  C[Visualize]
+  J[OJS] --->  D[Enable interactivity]
+  style C fill: #ffe3e3
+  style D fill: #ffe3e3
+  style J fill: #ffe3e3
+```
+
+Lastly, to `Put all in an HTML` and to `Deploy/share` our work, we use [`Quarto`](https://quarto.org/).
+
+> An open-source scientific and technical publishing system.
+
+```{mermaid}
+flowchart LR
+  A[Data source] --> B[Read/prepare data]
+  B --> C[Visualize]
+  C --> D[Enable interactivity]
+  D --> E[Put all in an HTML]
+  E --> F((Deploy/share))
+  style E fill: #ffe3e3
+  style F fill: #ffe3e3
+```
+
+```{mermaid}
+flowchart LR
+  K[Quarto] --->  E[Put all in an HTML]
+  K[Quarto] --->  F((Deploy/share))
+  style E fill: #ffe3e3
+  style F fill: #ffe3e3
+  style K fill: #ffe3e3
+```
+
+`Quarto` provides what we need: ease to create and publish HTML content. Most importantly though, it enables combining `R`, `Python`, `Julia` and `OJS` within the same document. This means that we can complete all the workflow within the `Quarto` ecosystem.
+
+```{mermaid}
+flowchart TB
+  K[Quarto] -->  A[Data source]
+  K[Quarto] -->  B[Read/prepare data]
+  K[Quarto] -->  C[Visualize]
+  K[Quarto] -->  D[Enable interactivity]
+  K[Quarto] -->  E[Put all in an HTML]
+  K[Quarto] -->  F((Deploy/share))
+  style K fill: #ffe3e3
+```
+
+## Example
+
+Let's create a minimal example using the workflow/tools we presented above. The source of the data is an `AGS` file. We are using `Python` to work with the data and `VS Code` as the IDE.
+
+::: {.callout-note title="Note"}
+This is one of many possible paths. There are several options.
+:::
+
+### Step 01: Setup
+
+Setting up the working environment involves:
+
+- Install `PowerShell`, `Windows Terminal`, `VS Code`, `Git`, `Pyenv`, and `Poetry`. There is an NGI Code Academy [guide](https://ngi-code-academy.geohub.no/installation-guides/) that covers all this.
+- Download and install `Quarto`.
+- Download and install the `Quarto extension` for `VS Code`.
+
+### Step 02: Start project
+
+Start the project by doing one of the following:
+
+- Create a python project using `poetry`, or, alternatively
+- Create a repository in `GitHub` / `Azure` and clone it locally.
+
+### Step 03: Create a `.qmd` document
+
+- `Quarto` files end with the `.qmd` extension.
+- A `.qmd` file is basically a notebook: it combines `markdown text` with `code chunks`.
+- At the very start of a `.qmd` file we have the `YAML` which sets the scene for what we want to do with this file (e.g., what kind of output we want to have). An example `YAML` can be:
+
+``` {.r}
+---
+title: "OJS for geodata"
+subtitle: "Interactive output for geotechnical data with R/Python/Julia + OJS"
+author: EMy
+format: html
+---
+```
+- Below the `YAML` we have the other content:
+  - `markdown text`: to explain stuff, and
+  - `code chunks`: to do stuff.
+
+```{{python}}
+# this is a python code chunk
+# here we write python code
+```
+```{{ojs}}
+// this is a OJS code chunk
+// here we write OJS code
+```
+### Step 04: Work with the data
+
+We read an `AGS` file and extract the CPT locations (group `LOCA`). The data are then saved locally in a `CSV` file. All this work is done with `python`, so the actual code is placed within `python` code chunks (which start with ` ```{python} `).
+
+::: panel-tabset
+#### Code
+
+```{.python}
+import polars as pl # <1>
+from python_ags4 import AGS4 # <1>
+tables, headings = AGS4.AGS4_to_dataframe('data/HKW_20190902_FNLM_CPT_AGS4.0_V02_F.ags') # <2>
+LOCA = AGS4.convert_to_numeric(tables['LOCA']) # <2>
+LOCA = pl.from_pandas(LOCA) # <3>
+LOCA.write_csv('csv/LOCA.csv') # <3>
+```
+
+1.  Import packages.
+2.  Read `AGS`.
+3.  Convert to `polars` DF and write `CSV` file.
+
+#### Output
+
+![](images/df.png)
+:::
+
+### Step 05: Plot
+
+We now leave `Python` and jump to `OJS` and more specifically to `Observable Plot`. The `OJS` code is written inside the respective code chunks, which start with ` ```{ojs} `. Initially let's load the brand-new `CSV` file into `OJS`.
+
+::: panel-tabset
+#### Read CSV
+
+```{ojs}
+LOCA = FileAttachment('csv/LOCA.csv').csv({typed: true})
+```
+
+#### LOCA
+
+```{ojs}
+LOCA
+```
+
+#### LOCA table
+
+```{ojs}
+Inputs.table(LOCA)
+```
+
+:::
+
+If we look at the `LOCA` tab above, we see that `OJS` presents the data in similar way to JSON data format. To view this data in a more traditional table-like format we use `Inputs.table(LOCA)` code (see the `LOCA table` tab).
+
+We can plot a location map of the CPTs, using `Observable Plot`:
+
+```{ojs}
+Plot.plot({
+    marks: [
+        Plot.dot(
+          LOCA,
+          {
+            x: "LOCA_NATE",
+            y: "LOCA_NATN",
+            r: 4,
+            stroke: "blue"
+          }
+        )
+  ]
+})
+```
+
+### Step 06: Interactivity
+
+There is nothing interactive about the previous plot. We might want, for example, to have a slider that allows to change the size of the dots. How to add such interactivity?
+
+For this, we use [`Inputs`](https://observablehq.com/collection/@observablehq/inputs).
+
+>These lightweight interface components — buttons, sliders, dropdowns, tables, and the like — help you explore data and build interactive displays.
+
+ There are many type of `Inputs` and each of them allows us to interact with the plots in a specific way. The most basic type is a numeric range: 
+
+```{ojs}
+// slider
+viewof x = Inputs.range()
+
+x
+```
+
+We can further customise the previous `Input` by specifying:
+
+- name: `dotsize`
+- range: `[0, 40]`
+- default value: `5`
+- step: `1`, and
+- label: `Size of dot:`.
+
+```{ojs}
+// dot size
+viewof dotsize= Inputs.range(
+    [0, 40],
+    {
+        value: 5,
+        step: 1,
+        label: "Size of dot:"
+    }
+)
+
+dotsize
+```
+
+We need to connect this slider with the previous plot. To do this, we use the name of the slider `dotsize` and refer it in the plot code. In our case, we link the `dotsize` slider with the radius `r` in the plot code. Note that the following plot is responsive to changes in the slider.
+
+```{ojs}
+Plot.plot({
+    marks: [
+        Plot.dot(
+          LOCA,
+          {
+            x: "LOCA_NATE",
+            y: "LOCA_NATN",
+            r: dotsize, // it was 4 before,
+            stroke: "blue"
+          }
+        )
+  ]
+})
+```
+
+Other interactive elements can be added to the plot. Let's say we want:
+
+- A [color](https://observablehq.com/@observablehq/input-color?collection=@observablehq/inputs) `Input` to change the color of the dots in the locations map.
+- A [select](https://observablehq.com/@observablehq/input-select?collection=@observablehq/inputs) `Input` allowing us to select one or some CPT locations and highlighting the selected locations in the location map.
+- A [toggle](https://observablehq.com/@observablehq/input-toggle?collection=@observablehq/inputs) `Input` allowing to show the location ID for the selected CPTs.
+
+These `Inputs` would look like this:
+
+```{ojs}
+// dot color
+viewof dotcolor = Inputs.color({label: "Color of dot:"})
+
+// select locations
+viewof filt_loc = Inputs.select(
+    [null].concat(LOCA.map(d => d.LOCA_ID)),
+    {
+        multiple: 8,
+        label: "Select:",
+        sort: true,
+        unique: true
+    }
+)
+
+// filter selected locations
+LOCA_FILT = LOCA.filter(function(func_filt) {return filt_loc.includes(func_filt.LOCA_ID);})
+
+// location name
+viewof name = Inputs.toggle({label: "Name?:"})
+```
+
+Linking these `Inputs` to the plot:
+
+```{ojs}
+Plot.plot({
+    marks: [
+        Plot.dot(
+            LOCA,
+            {
+                x: "LOCA_NATE",
+                y: "LOCA_NATN",
+                r: dotsize,
+                stroke: dotcolor
+            }
+        ),
+        Plot.dot(
+            LOCA_FILT, 
+            {
+                x: "LOCA_NATE",
+                y: "LOCA_NATN",
+                symbol: "times",
+                r: 10,
+                stroke: "LOCA_ID",
+                strokeWidth: 5
+            }
+        ),
+        name ? Plot.text(
+            LOCA_FILT,
+            {
+                x: "LOCA_NATE",
+                y: "LOCA_NATN",
+                text: 'LOCA_ID',
+                fill: 'black',
+                stroke: 'white'
+            }
+        ) : null
+
+  ]
+})
+```
+
+### Step 07: Create HTML and publish
+
+To [render](https://quarto.org/docs/computations/caching.html#rendering) the HTML file including all our interactive (and also static) content, we run `quarto render <my_file_name>.qmd` in `Terminal`. There are many options to publish and share this HTML, e.g. [Gitub Pages](https://quarto.org/docs/publishing/github-pages.html). We can't go into details here, but the process is rather straightforward.
+
+---
+
+This is all.

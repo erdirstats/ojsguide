@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ojsguide"
+version = "0.1.0"
+description = ""
+authors = ["Erdi Myftaraga <erdi.myftaraga@ngi.no>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+polars = "^0.18.0"
+python-ags4 = "^0.4.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
